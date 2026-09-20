@@ -1,0 +1,7 @@
+title: "Frank Vogt – Fotogalerie"
+description: "Fotografie, Holzwerken, Musik und Fahrzeuge"
+url: "https://frankvogt.saarland"
+baseurl: ""
+markdown: kramdown
+exclude:
+  - README.md
