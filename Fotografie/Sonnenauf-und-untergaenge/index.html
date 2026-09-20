@@ -1,0 +1,17 @@
+---
+layout: none
+title: "Sonnenauf- / Sonnenuntergänge"
+parent: "Fotografie"
+parent_label: "Fotografie"
+folder_path: "/Fotografie/Sonnenauf-und-untergaenge/"
+---
+{% assign images = site.static_files | where_exp: "file", "file.path contains page.folder_path" %}
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ page.title }} – Frank Vogt</title><link rel="stylesheet" href="/style.css"></head>
+<body><nav class="nav"><a class="logo" href="/">Frank Vogt</a><button class="menu">☰</button><div class="navlinks"><a href="/Fotografie/">Fotografie</a><a href="/Holzwerken/">Holzwerken</a><a href="/Musik/">Musik</a><a href="/Fahrzeuge/">Fahrzeuge</a></div></nav>
+<div class="breadcrumb"><a href="/{{ page.parent }}/">← {{ page.parent_label }}</a></div>
+<main class="gallery"><div class="eyebrow">Galerie</div><div class="gallery-head"><h1>{{ page.title }}</h1><div class="count">{{ images.size }} Fotos</div></div>
+{% if images.size > 0 %}<div class="grid">{% for file in images %}{% assign ext = file.extname | downcase %}{% if ext == ".jpg" or ext == ".jpeg" or ext == ".png" or ext == ".webp" or ext == ".gif" %}<button class="tile" data-src="{{ file.path }}" data-alt="{{ page.title }} – {{ forloop.index }}"><img loading="lazy" src="{{ file.path }}" alt="{{ page.title }} – {{ forloop.index }}"></button>{% endif %}{% endfor %}</div>
+{% else %}<div class="empty">Noch keine Fotos vorhanden.<br><br>Lade deine Bilder einfach in diesen Ordner hoch. Danach erscheinen sie automatisch in dieser Galerie.</div>{% endif %}</main>
+<div class="lightbox"><button class="close" aria-label="Schließen">×</button><button class="prev" aria-label="Vorheriges">‹</button><img alt=""><button class="next" aria-label="Nächstes">›</button></div>
+<footer>© Frank Vogt · frankvogt.saarland</footer><script src="/script.js"></script></body></html>
