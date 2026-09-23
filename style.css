@@ -37,3 +37,13 @@ footer{border-top:1px solid var(--line);width:min(calc(100% - 40px),var(--max));
 .prev,.next{position:fixed;top:50%;transform:translateY(-50%);border:0;background:rgba(255,255,255,.1);color:white;border-radius:50%;width:48px;height:48px;font-size:1.6rem;cursor:pointer}.prev{left:20px}.next{right:20px}
 @media(max-width:850px){.category-grid{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:650px){.menu{display:block}.navlinks{display:none;position:absolute;top:70px;left:20px;right:20px;background:var(--panel);padding:12px;border:1px solid var(--line);border-radius:15px;z-index:5;flex-direction:column}.navlinks.open{display:flex}.cards{grid-template-columns:1fr}.category-grid{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.gallery-head{display:block}}
+
+
+/* Rechtliche Seiten */
+.legal { max-width: 900px; }
+.legal h1 { margin-bottom: 2rem; }
+.legal h2 { margin-top: 2rem; }
+.legal p { line-height: 1.75; }
+.legal a, footer a { color: inherit; }
+.legal-date { margin-top: 3rem; opacity: .7; }
+footer { line-height: 1.8; }
