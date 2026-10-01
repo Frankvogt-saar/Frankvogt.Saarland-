@@ -1,0 +1,14 @@
+---
+layout: none
+title: "Sonstige"
+folder_path: "/Musik/Instrumentenbau/Sonstige/"
+---
+<!doctype html>
+<html lang="de">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sonstige – Frank Vogt</title><link rel="stylesheet" href="/style.css"></head>
+<body><nav class="nav"><a class="logo" href="/">Frank Vogt</a><div class="navlinks"><a href="/Fotografie/">Fotografie</a><a href="/Fahrzeuge/">Fahrzeuge</a><a href="/Holzwerken/">Holzwerken</a><a href="/Musik/">Musik</a></div></nav>
+<div class="breadcrumb"><a href="/Musik/Instrumentenbau/">← Instrumentenbau</a></div>
+<main class="wrap gallery"><div class="eyebrow">Instrumentenbau</div><h1>Sonstige</h1><p class="lead">Fotos aus dem Bereich Sonstige.</p>
+{% assign images = site.static_files | where_exp: "file", "file.path contains page.folder_path" %}
+{% if images.size > 0 %}<div class="gallery-grid">{% for file in images %}{% assign ext = file.extname | downcase %}{% if ext == ".jpg" or ext == ".jpeg" or ext == ".png" or ext == ".webp" or ext == ".gif" %}<figure><a href="{{ file.path }}"><img loading="lazy" src="{{ file.path }}" alt="Sonstige"></a></figure>{% endif %}{% endfor %}</div>{% else %}<div class="empty">Noch keine Fotos vorhanden.</div>{% endif %}
+</main><footer>© Frank Vogt · frankvogt.saarland</footer><script src="/script.js"></script></body></html>
