@@ -1,0 +1,78 @@
+```html
+---
+layout: null
+folder_path: /Fahrzeuge/Traktoren/Aktuell/
+---
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aktuelle Traktoren – Frank Vogt</title>
+<link rel="stylesheet" href="/style.css">
+
+<style>
+.fotogalerie {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+.fotogalerie a {
+  display: block;
+  overflow: hidden;
+  border-radius: 10px;
+}
+.fotogalerie img {
+  display: block;
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  transition: transform .2s;
+}
+.fotogalerie a:hover img {
+  transform: scale(1.04);
+}
+</style>
+</head>
+
+<body>
+<nav class="nav">
+<a class="logo" href="/">Frank Vogt</a>
+<button class="menu">☰</button>
+<div class="navlinks">
+<a href="/Fotografie/">Fotografie</a>
+<a href="/Holzwerken/">Holzwerken</a>
+<a href="/Musik/">Musik</a>
+<a href="/Fahrzeuge/">Fahrzeuge</a>
+</div>
+</nav>
+
+<div class="breadcrumb">
+<a href="/Fahrzeuge/Traktoren/">← Zurück zu Traktoren</a>
+</div>
+
+<main class="wrap">
+<div class="eyebrow">Fahrzeuge · Traktoren</div>
+<h1>Aktuelle Traktoren</h1>
+<p class="lead">Fotos der aktuell vorhandenen Traktoren.</p>
+
+<div class="fotogalerie">
+{% assign bilder = site.static_files | where_exp: "datei", "datei.path contains page.folder_path" %}
+{% for bild in bilder %}
+  {% assign endung = bild.extname | downcase %}
+  {% if endung == ".jpg" or endung == ".jpeg" or endung == ".png" or endung == ".webp" or endung == ".gif" %}
+  <a href="{{ bild.path | relative_url }}" target="_blank">
+    <img src="{{ bild.path | relative_url }}" alt="Foto eines Traktors" loading="lazy">
+  </a>
+  {% endif %}
+{% endfor %}
+</div>
+
+</main>
+
+<footer>© Frank Vogt · frankvogt.saarland</footer>
+<script src="/script.js"></script>
+</body>
+</html>
+```
