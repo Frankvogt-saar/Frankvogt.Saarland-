@@ -1,0 +1,202 @@
+```html
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Traktoren – Aktuell | Frank Vogt</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+
+  <nav class="nav">
+    <a class="logo" href="../../../">Frank Vogt</a>
+    <div class="navlinks">
+      <a href="../../../">Startseite</a>
+      <a href="../../">Fahrzeuge</a>
+      <a href="../">Traktoren</a>
+      <a href="../Ehemalig/">Ehemalig</a>
+    </div>
+  </nav>
+
+  <div class="breadcrumb">
+    <a href="../../../">Startseite</a> /
+    <a href="../../">Fahrzeuge</a> /
+    <a href="../">Traktoren</a> /
+    Aktuell
+  </div>
+
+  <main class="gallery">
+    <div class="gallery-head">
+      <div>
+        <div class="eyebrow">Fahrzeuge</div>
+        <h2>Traktoren – Aktuell</h2>
+        <p class="lead">Fotogalerie von Frank Vogt</p>
+      </div>
+      <div class="count" id="count"></div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty" hidden>
+      Die Fotos konnten nicht geladen werden.
+      Bitte prüfe die Dateinamen und die Veröffentlichung auf GitHub.
+    </div>
+  </main>
+
+  <footer>© Frank Vogt</footer>
+
+  <div class="lightbox" id="lightbox" role="dialog"
+       aria-modal="true" aria-label="Foto-Großansicht">
+    <button class="close" id="close" aria-label="Schließen">&times;</button>
+    <button class="prev" id="prev" aria-label="Vorheriges Foto">&#8249;</button>
+    <img id="bigPhoto" alt="Foto in Großansicht">
+    <button class="next" id="next" aria-label="Nächstes Foto">&#8250;</button>
+  </div>
+
+  <script>
+    // Die Dateinamen müssen exakt mit denen auf GitHub übereinstimmen.
+    const fotos = [
+      "SR3 Landpartie Birkenhof Handy-006.jpeg",
+      "20150606 MF Fuhrpark-006.JPG",
+      "20150829 Holzfahrt Hölschberg-038.JPG",
+      "20150829 Holzfahrt Hölschberg-040.JPG",
+      "20150829 Holzfahrt Hölschberg-044.JPG",
+      "20160507 D 15 Anhänger-006.JPG",
+      "20170107 Bucher Schneebesen 001.JPG",
+      "20180407 Holzspalten Wiese MF 148 Halter-015.JPG",
+      "20180421 Schmotzer aufhängen0-022.JPG",
+      "20190518 Rapid Wiese mähen-002.JPG",
+      "20200711 Minibagger Bach014.JPG",
+      "20200725 Holzmachen Minibagger Holzgreifer-018.JPG",
+      "20200725 Holzmachen Minibagger Holzgreifer-021.JPG",
+      "20220326 Käferholz Transport MF 165 Fendt(30).JPG",
+      "20250614 Kramer Radlader Lieferung (6).JPG",
+      "35 Seite neu.jpg",
+      "35 vorn alt 505.jpg",
+      "Abtransport MF 30 Abholung MF 148 066.jpg",
+      "Abtransport MF 30 Abholung MF 148 088.jpg",
+      "Blank 02 alt.BMP",
+      "Blank-Raupe 17.jpg",
+      "Bucher 043.jpg",
+      "Bucher Mäharbeiten 10.08.07 027.jpg",
+      "Deutz D15 069.jpg",
+      "FUHRPARK.JPG",
+      "Fendt FWA 258S 001.jpg",
+      "Fendt Farmer 106 Schnee 27.11.2010 010.jpg",
+      "Garten Weinfassaktion u.a. 08.02.06 001.jpg",
+      "Garten Weinfassaktion u.a. 08.02.06 002.jpg",
+      "Garten Weinfassaktion u.a. 08.02.06 024.jpg",
+      "Gutbrod Terra 4 PS 001.jpg",
+      "Gutbrod Terra 4 PS 022.jpg",
+      "Gutbrod Terra System 004.jpg",
+      "HALTER.JPG",
+      "Inhaber 1994 01.jpg",
+      "Halter A10 beye 09-97 02.jpg",
+      "Holder02.jpg",
+      "Linde Gabelstapler 017.jpg",
+      "MF 835 Restaurierung 2005 449.jpg",
+      "MFneubmp.jpg",
+      "Mimoki05.jpg",
+      "Moki1.jpg",
+      "Moki3.BMP",
+      "MotoStandard.JPG",
+      "Motorjapaner 16.10.05 019.jpg",
+      "Motorjapaner 16.10.05 020.jpg",
+      "Motorjapaner 16.10.05 022.jpg",
+      "Potratz 19.12.2009 006.jpg",
+      "Potratz Nils Roman 26.10.05 028.jpg",
+      "Potratz Nils Roman 26.10.05 034.jpg",
+      "Rapid 1.jpg",
+      "Schmotzer 03.jpg",
+      "Schmotzer Emil Grimm BW 2.jpg"
+    ];
+
+    const grid = document.getElementById("grid");
+    const empty = document.getElementById("empty");
+    const count = document.getElementById("count");
+    const lightbox = document.getElementById("lightbox");
+    const bigPhoto = document.getElementById("bigPhoto");
+
+    const geladen = [];
+    let aktuell = 0;
+
+    fotos.forEach(name => {
+      const url = encodeURI(name);
+      const img = document.createElement("img");
+
+      img.src = url;
+      img.alt = "";
+      img.loading = "lazy";
+
+      const tile = document.createElement("button");
+      tile.type = "button";
+      tile.className = "tile";
+      tile.setAttribute("aria-label", "Foto groß öffnen");
+
+      img.addEventListener("error", () => {
+        tile.remove();
+        const index = geladen.findIndex(f => f.name === name);
+        if (index !== -1) geladen.splice(index, 1);
+        count.textContent = geladen.length + " Fotos";
+        empty.hidden = geladen.length !== 0;
+      });
+
+      img.addEventListener("load", () => {
+        count.textContent = geladen.length + " Fotos";
+      });
+
+      tile.appendChild(img);
+      grid.appendChild(tile);
+
+      geladen.push({ name, url, tile });
+
+      tile.addEventListener("click", () => {
+        aktuell = geladen.findIndex(f => f.name === name);
+        anzeigen();
+      });
+    });
+
+    function anzeigen() {
+      if (!geladen.length) return;
+      aktuell = (aktuell + geladen.length) % geladen.length;
+      bigPhoto.src = geladen[aktuell].url;
+      lightbox.classList.add("open");
+    }
+
+    function schliessen() {
+      lightbox.classList.remove("open");
+      bigPhoto.src = "";
+    }
+
+    document.getElementById("close").addEventListener("click", schliessen);
+    document.getElementById("prev").addEventListener("click", () => {
+      aktuell--;
+      anzeigen();
+    });
+    document.getElementById("next").addEventListener("click", () => {
+      aktuell++;
+      anzeigen();
+    });
+
+    lightbox.addEventListener("click", event => {
+      if (event.target === lightbox) schliessen();
+    });
+
+    document.addEventListener("keydown", event => {
+      if (!lightbox.classList.contains("open")) return;
+      if (event.key === "Escape") schliessen();
+      if (event.key === "ArrowLeft") {
+        aktuell--;
+        anzeigen();
+      }
+      if (event.key === "ArrowRight") {
+        aktuell++;
+        anzeigen();
+      }
+    });
+
+    count.textContent = geladen.length + " Fotos";
+  </script>
+</body>
+</html>
+```
