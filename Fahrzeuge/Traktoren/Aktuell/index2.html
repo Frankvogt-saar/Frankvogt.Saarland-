@@ -6,42 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Traktoren – Aktuell | Frank Vogt</title>
 
-  <style>
+ <link rel="stylesheet" href="../../../style.css">
     * { box-sizing: border-box; }
 
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f3f4f6;
-      color: #222;
-    }
-
-    header {
-      background: #26372c;
-      color: white;
-      padding: 24px 16px;
-      text-align: center;
-    }
-
-    header h1 { margin: 0 0 8px; }
-
-    nav {
-      margin-top: 18px;
-    }
-
-    nav a {
-      display: inline-block;
-      color: white;
-      margin: 5px 10px;
-      text-decoration: none;
-    }
-
-    main {
-      max-width: 1400px;
-      margin: auto;
-      padding: 24px 16px;
-    }
-
+ 
     .gallery {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
@@ -123,10 +92,7 @@
       border-radius: 8px;
     }
 
-    footer {
-      text-align: center;
-      padding: 20px;
-      color: #666;
+   
     }
   </style>
 </head>
@@ -235,9 +201,7 @@
       bild.alt = name;
       bild.loading = "lazy";
 
-      const beschriftung = document.createElement("span");
-      beschriftung.textContent = name;
-
+     
       bild.addEventListener("error", () => {
         knopf.remove();
         hinweis.hidden = false;
@@ -245,7 +209,7 @@
           "Einige Fotos konnten nicht geladen werden. Bitte Dateinamen in der Fotoliste prüfen.";
       });
 
-      knopf.append(bild, beschriftung);
+      knopf.appendChild(bild);
       knopf.addEventListener("click", () => {
         gross.src = pfad;
         gross.alt = name;
