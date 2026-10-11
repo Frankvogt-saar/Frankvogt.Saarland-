@@ -1,1 +1,105 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Windräder – Frank Vogt</title><link rel="stylesheet" href="/style.css"></head><body><nav class="nav"><a class="logo" href="/">Frank Vogt</a><div class="navlinks"><a href="/Fotografie/">Fotografie</a><a href="/Fahrzeuge/">Fahrzeuge</a><a href="/Holzwerken/">Holzwerken</a><a href="/Musik/">Musik</a></div></nav><div class="breadcrumb"><a href="/Holzwerken/">← Holzwerken</a></div><main class="wrap gallery"><div class="eyebrow">Galerie</div><h1>Windräder</h1><p class="lead">Hier können Fotos aus dem Bereich Windräder abgelegt werden.</p><div class="empty">Noch keine Fotos vorhanden.</div></main><footer>© Frank Vogt · frankvogt.saarland</footer><script src="/script.js"></script></body></html>
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Windräder – Frank Vogt</title>
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+  <header class="nav">
+    <a class="logo" href="../../index.html">Frank Vogt</a>
+    <nav class="navlinks">
+      <a href="../../Fotografie/">Fotografie</a>
+      <a href="../../Holzwerken/">Holzwerken</a>
+      <a href="../../Musik/">Musik</a>
+      <a href="../../Fahrzeuge/">Fahrzeuge</a>
+    </nav>
+  </header>
+
+  <main class="gallery">
+    <div class="breadcrumb">
+      <a href="../../index.html">Startseite</a> /
+      <a href="../">Holzwerken</a> / Windräder
+    </div>
+    <div class="gallery-head">
+      <h1>Windräder</h1>
+      <span class="count" id="count">Bilder werden geladen …</span>
+    </div>
+    <div class="grid" id="grid"></div>
+    <p id="message" role="status">Bilderliste wird geladen …</p>
+  </main>
+
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="close" id="close" aria-label="Schließen">×</button>
+    <button class="prev" id="prev" aria-label="Vorheriges Bild">‹</button>
+    <img id="largeImage" alt="">
+    <button class="next" id="next" aria-label="Nächstes Bild">›</button>
+  </div>
+
+  <script>
+  (async function () {
+    const grid = document.getElementById('grid');
+    const count = document.getElementById('count');
+    const message = document.getElementById('message');
+    const lightbox = document.getElementById('lightbox');
+    const largeImage = document.getElementById('largeImage');
+    let photos = [];
+    let current = 0;
+
+    try {
+      const response = await fetch('bilder.json', { cache: 'no-store' });
+      if (!response.ok) throw new Error('bilder.json fehlt');
+      photos = await response.json();
+      if (!Array.isArray(photos) || photos.length === 0) {
+        message.textContent = 'Noch keine Bilder in diesem Ordner vorhanden.';
+        count.textContent = '0 Bilder';
+        return;
+      }
+      message.textContent = '';
+      count.textContent = photos.length + (photos.length === 1 ? ' Bild' : ' Bilder');
+
+      photos.forEach((filename, index) => {
+        const tile = document.createElement('button');
+        tile.className = 'tile';
+        tile.type = 'button';
+        tile.setAttribute('aria-label', 'Bild ' + (index + 1) + ' öffnen');
+        const img = document.createElement('img');
+        img.loading = 'lazy';
+        img.alt = '';
+        img.src = encodeURIComponent(filename).replace(/%2F/g, '/');
+        tile.appendChild(img);
+        tile.addEventListener('click', () => openPhoto(index));
+        grid.appendChild(tile);
+      });
+    } catch (error) {
+      count.textContent = '';
+      message.textContent = 'Die automatische Bilderliste wurde noch nicht erstellt. Bitte die GitHub-Aktion im Ordner .github/workflows hochladen und danach einmal mit GitHub Desktop pushen.';
+    }
+
+    function openPhoto(index) {
+      if (!photos.length) return;
+      current = (index + photos.length) % photos.length;
+      largeImage.src = encodeURIComponent(photos[current]).replace(/%2F/g, '/');
+      lightbox.classList.add('open');
+      lightbox.setAttribute('aria-hidden', 'false');
+    }
+    function closePhoto() {
+      lightbox.classList.remove('open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      largeImage.removeAttribute('src');
+    }
+    document.getElementById('close').addEventListener('click', closePhoto);
+    document.getElementById('prev').addEventListener('click', () => openPhoto(current - 1));
+    document.getElementById('next').addEventListener('click', () => openPhoto(current + 1));
+    lightbox.addEventListener('click', e => { if (e.target === lightbox) closePhoto(); });
+    document.addEventListener('keydown', e => {
+      if (!lightbox.classList.contains('open')) return;
+      if (e.key === 'Escape') closePhoto();
+      if (e.key === 'ArrowLeft') openPhoto(current - 1);
+      if (e.key === 'ArrowRight') openPhoto(current + 1);
+    });
+  })();
+  </script>
+</body>
+</html>

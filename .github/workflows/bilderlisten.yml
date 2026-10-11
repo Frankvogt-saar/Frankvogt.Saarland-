@@ -25,6 +25,7 @@ jobs:
           from pathlib import Path
 
           folders = [
+          "Holzwerken/Windraeder",
               Path("Fahrzeuge/Traktoren/Aktuell"),
               Path("Fahrzeuge/Traktoren/Ehemalig"),
               Path("Fahrzeuge/Arbeitseinsaetze"),
