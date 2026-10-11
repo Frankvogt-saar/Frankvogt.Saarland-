@@ -1,47 +1,130 @@
 <!doctype html>
 <html lang="de">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ehemalige Traktoren – Frank Vogt</title>
-<link rel="stylesheet" href="/style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ehemalig – Frank Vogt</title>
+  <link rel="stylesheet" href="../../../style.css">
+  <style>
+    .gallery-status { color: var(--muted); margin-top: 18px; }
+    .tile img { object-fit: cover; background: #111; }
+  </style>
 </head>
-
 <body>
+  <nav class="nav">
+    <a class="logo" href="../../../">Frank Vogt</a>
+    <button class="menu" id="menuButton" aria-label="Menü öffnen">☰</button>
+    <div class="navlinks" id="navlinks">
+      <a href="../../../">Startseite</a>
+      <a href="../../">Fahrzeuge</a>
+      <a href="../">Traktoren</a>
+      <a href="../Aktuell/">Aktuell</a>
+    </div>
+  </nav>
 
-<nav class="nav">
-<a class="logo" href="/">Frank Vogt</a>
-<button class="menu">☰</button>
+  <div class="breadcrumb">
+    <a href="../../../">Startseite</a> / <a href="../../">Fahrzeuge</a> / Traktoren / Ehemalig
+  </div>
 
-<div class="navlinks">
-<a href="/Fotografie/">Fotografie</a>
-<a href="/Holzwerken/">Holzwerken</a>
-<a href="/Musik/">Musik</a>
-<a href="/Fahrzeuge/">Fahrzeuge</a>
-</div>
-</nav>
+  <main class="gallery">
+    <div class="gallery-head">
+      <div>
+        <div class="eyebrow">Frank Vogt · Fotogalerie</div>
+        <h2>Ehemalig</h2>
+      </div>
+      <div class="count" id="photoCount">Bilder werden geladen …</div>
+    </div>
+    <p class="lead">Ehemalige Traktoren und Fahrzeuge.</p>
+    <div class="grid" id="photoGrid" aria-label="Fotogalerie"></div>
+    <p class="gallery-status" id="galleryStatus">Fotos werden geladen …</p>
+  </main>
 
-<div class="breadcrumb">
-<a href="/Fahrzeuge/Traktoren/">← Zurück zu Traktoren</a>
-</div>
+  <footer>Frank Vogt · Fotogalerie</footer>
 
-<main class="wrap">
+  <div class="lightbox" id="lightbox" aria-label="Bildansicht">
+    <button class="close" id="closeButton" aria-label="Schließen">×</button>
+    <button class="prev" id="prevButton" aria-label="Vorheriges Foto">‹</button>
+    <img id="largeImage" alt="Foto in Großansicht">
+    <button class="next" id="nextButton" aria-label="Nächstes Foto">›</button>
+  </div>
 
-<div class="eyebrow">Fahrzeuge · Traktoren</div>
+  <script>
+    const grid = document.getElementById("photoGrid");
+    const count = document.getElementById("photoCount");
+    const status = document.getElementById("galleryStatus");
+    const lightbox = document.getElementById("lightbox");
+    const largeImage = document.getElementById("largeImage");
+    let photos = [];
+    let current = 0;
 
-<h1>Ehemalige Traktoren</h1>
+    function fileUrl(name) {
+      return name.split("/").map(part => encodeURIComponent(part)).join("/");
+    }
+    function openPhoto(index) {
+      if (!photos.length) return;
+      current = (index + photos.length) % photos.length;
+      largeImage.src = fileUrl(photos[current]);
+      lightbox.classList.add("open");
+      document.body.style.overflow = "hidden";
+    }
+    function closePhoto() {
+      lightbox.classList.remove("open");
+      document.body.style.overflow = "";
+      largeImage.removeAttribute("src");
+    }
+    document.getElementById("closeButton").addEventListener("click", closePhoto);
+    document.getElementById("prevButton").addEventListener("click", () => openPhoto(current - 1));
+    document.getElementById("nextButton").addEventListener("click", () => openPhoto(current + 1));
+    lightbox.addEventListener("click", event => {
+      if (event.target === lightbox) closePhoto();
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closePhoto();
+      if (event.key === "ArrowLeft" && lightbox.classList.contains("open")) openPhoto(current - 1);
+      if (event.key === "ArrowRight" && lightbox.classList.contains("open")) openPhoto(current + 1);
+    });
+    document.getElementById("menuButton").addEventListener("click", () => {
+      document.getElementById("navlinks").classList.toggle("open");
+    });
 
-<p class="lead">
-Fotos von früher vorhandener Traktoren.
-</p>
-
-</main>
-
-<footer>
-© Frank Vogt · frankvogt.saarland
-</footer>
-
-<script src="/script.js"></script>
-
+    fetch("bilder.json", { cache: "no-store" })
+      .then(response => {
+        if (!response.ok) throw new Error("Bilderliste fehlt");
+        return response.json();
+      })
+      .then(files => {
+        photos = files.filter(name => typeof name === "string");
+        count.textContent = photos.length + (photos.length === 1 ? " Foto" : " Fotos");
+        grid.replaceChildren();
+        if (!photos.length) {
+          status.textContent = "In diesem Ordner wurden noch keine unterstützten Bilddateien gefunden.";
+          return;
+        }
+        status.textContent = "";
+        photos.forEach((name, index) => {
+          const button = document.createElement("button");
+          button.className = "tile";
+          button.type = "button";
+          button.setAttribute("aria-label", "Foto " + (index + 1));
+          const img = document.createElement("img");
+          img.src = fileUrl(name);
+          img.alt = "";
+          img.loading = "lazy";
+          img.addEventListener("error", () => {
+            button.remove();
+            photos[index] = null;
+            const remaining = photos.filter(Boolean).length;
+            count.textContent = remaining + (remaining === 1 ? " Foto" : " Fotos");
+          });
+          button.appendChild(img);
+          button.addEventListener("click", () => openPhoto(index));
+          grid.appendChild(button);
+        });
+      })
+      .catch(() => {
+        count.textContent = "Bilderliste fehlt";
+        status.textContent = "Die automatische Bilderliste wurde noch nicht erstellt. Bitte die GitHub-Aktion im Ordner .github/workflows hochladen und danach einmal mit GitHub Desktop pushen.";
+      });
+  </script>
 </body>
 </html>
