@@ -1,0 +1,61 @@
+name: Bilderlisten aktualisieren
+
+on:
+  push:
+    branches: [main, master]
+    paths-ignore:
+      - "**/bilder.json"
+
+permissions:
+  contents: write
+
+jobs:
+  bilderlisten:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Bilderlisten erstellen
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          folders = [
+              Path("Fahrzeuge/Traktoren/Aktuell"),
+              Path("Fahrzeuge/Traktoren/Ehemalig"),
+              Path("Fahrzeuge/Arbeitseinsaetze"),
+              Path("Fahrzeuge/Ausstellungen"),
+          ]
+          extensions = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".avif"}
+
+          for folder in folders:
+              if not folder.is_dir():
+                  print(f"Ordner nicht gefunden: {folder}")
+                  continue
+              images = sorted(
+                  p.name for p in folder.iterdir()
+                  if p.is_file() and p.suffix.lower() in extensions
+              )
+              (folder / "bilder.json").write_text(
+                  json.dumps(images, ensure_ascii=False, indent=2) + "\\n",
+                  encoding="utf-8"
+              )
+              print(f"{folder}: {len(images)} Bilder")
+
+          PY
+
+      - name: Bilderlisten speichern
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Fahrzeuge/Traktoren/Aktuell/bilder.json Fahrzeuge/Traktoren/Ehemalig/bilder.json Fahrzeuge/Arbeitseinsaetze/bilder.json Fahrzeuge/Ausstellungen/bilder.json
+          if git diff --cached --quiet; then
+            echo "Keine Änderungen."
+          else
+            git commit -m "Bilderlisten automatisch aktualisieren"
+            git push
+          fi
