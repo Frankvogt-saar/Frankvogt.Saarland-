@@ -1,3 +1,4 @@
+
 name: Bilderlisten aktualisieren
 
 on:
@@ -25,33 +26,44 @@ jobs:
           from pathlib import Path
 
           folders = [
-          "Holzwerken/Windraeder",
-              Path("Fahrzeuge/Traktoren/Aktuell"),
-              Path("Fahrzeuge/Traktoren/Ehemalig"),
-              Path("Fahrzeuge/Arbeitseinsaetze"),
-              Path("Fahrzeuge/Ausstellungen"),
-              Path("Musik"),
-              Path("Musik/Instrumentenbau"),
-              Path("Musik/Instrumentenbau/Saiteninstrumente"),
-              Path("Musik/Instrumentenbau/Schlaginstrumente"),
-              Path("Musik/Instrumentenbau/Sonstige"),
-              Path("Musik/Sonstiges"),
+              "Fahrzeuge/Traktoren/Aktuell",
+              "Fahrzeuge/Traktoren/Ehemalig",
+              "Fahrzeuge/Arbeitseinsaetze",
+              "Fahrzeuge/Ausstellungen",
+              "Musik",
+              "Musik/Instrumentenbau",
+              "Musik/Instrumentenbau/Saiteninstrumente",
+              "Musik/Instrumentenbau/Schlaginstrumente",
+              "Musik/Instrumentenbau/Sonstige",
+              "Musik/Sonstiges",
+              "Holzwerken",
+              "Holzwerken/Windraeder",
+              "Holzwerken/Windräder",
           ]
-          extensions = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".avif"}
 
-          for folder in folders:
-    folder = Path(folder)
-    if not folder.is_dir():
-        print(f"Übersprungen (Ordner nicht vorhanden): {folder}")
-        continue
+          extensions = {
+              ".jpg", ".jpeg", ".png", ".gif",
+              ".webp", ".bmp", ".avif"
+          }
+
+          for folder_name in folders:
+              folder = Path(folder_name)
+
+              if not folder.is_dir():
+                  print(f"Übersprungen: {folder}")
+                  continue
+
               images = sorted(
                   p.name for p in folder.iterdir()
-                  if p.is_file() and p.suffix.lower() in extensions
+                  if p.is_file()
+                  and p.suffix.lower() in extensions
               )
+
               (folder / "bilder.json").write_text(
                   json.dumps(images, ensure_ascii=False, indent=2) + "\n",
                   encoding="utf-8"
               )
+
               print(f"{folder}: {len(images)} Bilder")
 
           PY
@@ -60,7 +72,22 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Fahrzeuge/Traktoren/Aktuell/bilder.json Fahrzeuge/Traktoren/Ehemalig/bilder.json Fahrzeuge/Arbeitseinsaetze/bilder.json Fahrzeuge/Ausstellungen/bilder.json Musik/bilder.json Musik/Instrumentenbau/bilder.json Musik/Instrumentenbau/Saiteninstrumente/bilder.json Musik/Instrumentenbau/Schlaginstrumente/bilder.json Musik/Instrumentenbau/Sonstige/bilder.json Musik/Sonstiges/bilder.json
+
+          git add -A -- \
+            "Fahrzeuge/Traktoren/Aktuell/bilder.json" \
+            "Fahrzeuge/Traktoren/Ehemalig/bilder.json" \
+            "Fahrzeuge/Arbeitseinsaetze/bilder.json" \
+            "Fahrzeuge/Ausstellungen/bilder.json" \
+            "Musik/bilder.json" \
+            "Musik/Instrumentenbau/bilder.json" \
+            "Musik/Instrumentenbau/Saiteninstrumente/bilder.json" \
+            "Musik/Instrumentenbau/Schlaginstrumente/bilder.json" \
+            "Musik/Instrumentenbau/Sonstige/bilder.json" \
+            "Musik/Sonstiges/bilder.json" \
+            "Holzwerken/bilder.json" \
+            "Holzwerken/Windraeder/bilder.json" \
+            "Holzwerken/Windräder/bilder.json"
+
           if git diff --cached --quiet; then
             echo "Keine Änderungen."
           else
