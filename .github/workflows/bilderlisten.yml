@@ -40,9 +40,10 @@ jobs:
           extensions = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".avif"}
 
           for folder in folders:
-              if not folder.is_dir():
-                  print(f"Ordner nicht gefunden: {folder}")
-                  continue
+    folder = Path(folder)
+    if not folder.is_dir():
+        print(f"Übersprungen (Ordner nicht vorhanden): {folder}")
+        continue
               images = sorted(
                   p.name for p in folder.iterdir()
                   if p.is_file() and p.suffix.lower() in extensions
