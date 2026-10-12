@@ -34,8 +34,7 @@ jobs:
               "Musik/Instrumentenbau",
               "Musik/Instrumentenbau/Saiteninstrumente",
               "Musik/Instrumentenbau/Schlaginstrumente",
-              "Musik/Instrumentenbau/Sonstige",
-              "Musik/Sonstiges",
+              "Musik/Instrumentenbau/Sonstige",          
               "Holzwerken",
               "Holzwerken/Windraeder",
               "Holzwerken/Windräder",
@@ -68,25 +67,21 @@ jobs:
 
           PY
 
+     
       - name: Bilderlisten speichern
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add -A -- \
-            "Fahrzeuge/Traktoren/Aktuell/bilder.json" \
-            "Fahrzeuge/Traktoren/Ehemalig/bilder.json" \
-            "Fahrzeuge/Arbeitseinsaetze/bilder.json" \
-            "Fahrzeuge/Ausstellungen/bilder.json" \
-            "Musik/bilder.json" \
-            "Musik/Instrumentenbau/bilder.json" \
-            "Musik/Instrumentenbau/Saiteninstrumente/bilder.json" \
-            "Musik/Instrumentenbau/Schlaginstrumente/bilder.json" \
-            "Musik/Instrumentenbau/Sonstige/bilder.json" \
-            "Musik/Sonstiges/bilder.json" \
-            "Holzwerken/bilder.json" \
-            "Holzwerken/Windraeder/bilder.json" \
-            "Holzwerken/Windräder/bilder.json"
+          find Fahrzeuge Musik Holzwerken -type f -name bilder.json -print0 2>/dev/null | xargs -0 -r git add --
+
+          if git diff --cached --quiet; then
+            echo "Keine Änderungen."
+          else
+            git commit -m "Bilderlisten automatisch aktualisieren"
+            git push
+          fi
+
 
           if git diff --cached --quiet; then
             echo "Keine Änderungen."
