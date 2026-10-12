@@ -37,6 +37,7 @@ jobs:
               "Musik/Instrumentenbau/Sonstige",          
               "Holzwerken",
               "Holzwerken/Windraeder",
+	      "Holzwerken/Windräder",
                        ]
 
           extensions = {
