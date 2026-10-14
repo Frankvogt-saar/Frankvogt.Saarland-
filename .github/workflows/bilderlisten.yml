@@ -6,6 +6,7 @@ on:
     branches: [main, master]
     paths-ignore:
       - "**/bilder.json"
+      - "**/videos.json"
 
 permissions:
   contents: write
@@ -13,79 +14,89 @@ permissions:
 jobs:
   bilderlisten:
     runs-on: ubuntu-latest
+
     steps:
       - name: Repository auschecken
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Bilderlisten erstellen
+      - name: Bilder- und Videolisten erstellen
         run: |
           python3 - <<'PY'
           import json
           from pathlib import Path
 
           folders = [
-              "Fahrzeuge/Traktoren/Aktuell",
-              "Fahrzeuge/Traktoren/Ehemalig",
-              "Fahrzeuge/Arbeitseinsaetze",
-              "Fahrzeuge/Ausstellungen",
-              "Musik",
-              "Musik/Instrumentenbau",
-              "Musik/Instrumentenbau/Saiteninstrumente",
-              "Musik/Instrumentenbau/Schlaginstrumente",
-              "Musik/Instrumentenbau/Sonstige",          
-              "Holzwerken",
-              "Holzwerken/Windraeder",
-	      "Holzwerken/Windräder",
-                       ]
+              Path("Fotografie"),
+              Path("Fahrzeuge"),
+              Path("Musik"),
+              Path("Holzwerken"),
+          ]
 
-          extensions = {
+          image_extensions = {
               ".jpg", ".jpeg", ".png", ".gif",
               ".webp", ".bmp", ".avif"
           }
 
-          for folder_name in folders:
-              folder = Path(folder_name)
+          video_extensions = {".mp4"}
 
-              if not folder.is_dir():
-                  print(f"Übersprungen: {folder}")
+          for root in folders:
+              if not root.is_dir():
+                  print(f"Ordner nicht gefunden: {root}")
                   continue
 
-              images = sorted(
-                  p.name for p in folder.iterdir()
-                  if p.is_file()
-                  and p.suffix.lower() in extensions
+              # Alle Unterordner automatisch berücksichtigen.
+              gallery_folders = [root] + sorted(
+                  (p for p in root.rglob("*") if p.is_dir()),
+                  key=lambda p: str(p).lower()
               )
 
-              (folder / "bilder.json").write_text(
-                  json.dumps(images, ensure_ascii=False, indent=2) + "\n",
-                  encoding="utf-8"
-              )
+              for folder in gallery_folders:
+                  images = sorted(
+                      (
+                          p.name for p in folder.iterdir()
+                          if p.is_file()
+                          and p.suffix.lower() in image_extensions
+                      ),
+                      key=str.lower
+                  )
 
-              print(f"{folder}: {len(images)} Bilder")
+                  videos = sorted(
+                      (
+                          p.name for p in folder.iterdir()
+                          if p.is_file()
+                          and p.suffix.lower() in video_extensions
+                      ),
+                      key=str.lower
+                  )
 
+                  (folder / "bilder.json").write_text(
+                      json.dumps(images, ensure_ascii=False, indent=2) + "\n",
+                      encoding="utf-8"
+                  )
+
+                  (folder / "videos.json").write_text(
+                      json.dumps(videos, ensure_ascii=False, indent=2) + "\n",
+                      encoding="utf-8"
+                  )
+
+                  print(
+                      f"{folder}: {len(images)} Bilder, "
+                      f"{len(videos)} Videos"
+                  )
           PY
 
-     
-      - name: Bilderlisten speichern
+      - name: Listen speichern
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          find Fahrzeuge Musik Holzwerken -type f -name bilder.json -print0 2>/dev/null | xargs -0 -r git add --
+          git add -A
 
           if git diff --cached --quiet; then
             echo "Keine Änderungen."
           else
-            git commit -m "Bilderlisten automatisch aktualisieren"
-            git push
-          fi
-
-
-          if git diff --cached --quiet; then
-            echo "Keine Änderungen."
-          else
-            git commit -m "Bilderlisten automatisch aktualisieren"
+            git commit -m "Bilder- und Videolisten automatisch aktualisieren"
             git push
           fi
