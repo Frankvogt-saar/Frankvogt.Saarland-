@@ -1,17 +1,61 @@
----
-layout: none
-title: "Mond / Universum"
-parent: "Fotografie"
-parent_label: "Fotografie"
-folder_path: "/Fotografie/Mond-Universum/"
----
-{% assign images = site.static_files | where_exp: "file", "file.path contains page.folder_path" %}
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{{ page.title }} – Frank Vogt</title><link rel="stylesheet" href="/style.css"></head>
-<body><nav class="nav"><a class="logo" href="/">Frank Vogt</a><button class="menu">☰</button><div class="navlinks"><a href="/Fotografie/">Fotografie</a><a href="/Holzwerken/">Holzwerken</a><a href="/Musik/">Musik</a><a href="/Fahrzeuge/">Fahrzeuge</a></div></nav>
-<div class="breadcrumb"><a href="/{{ page.parent }}/">← {{ page.parent_label }}</a></div>
-<main class="gallery"><div class="eyebrow">Galerie</div><div class="gallery-head"><h1>{{ page.title }}</h1><div class="count">{{ images.size }} Fotos</div></div>
-{% if images.size > 0 %}<div class="grid">{% for file in images %}{% assign ext = file.extname | downcase %}{% if ext == ".jpg" or ext == ".jpeg" or ext == ".png" or ext == ".webp" or ext == ".gif" %}<button class="tile" data-src="{{ file.path }}" data-alt="{{ page.title }} – {{ forloop.index }}"><img loading="lazy" src="{{ file.path }}" alt="{{ page.title }} – {{ forloop.index }}"></button>{% endif %}{% endfor %}</div>
-{% else %}<div class="empty">Noch keine Fotos vorhanden.<br><br>Lade deine Bilder einfach in diesen Ordner hoch. Danach erscheinen sie automatisch in dieser Galerie.</div>{% endif %}</main>
-<div class="lightbox"><button class="close" aria-label="Schließen">×</button><button class="prev" aria-label="Vorheriges">‹</button><img alt=""><button class="next" aria-label="Nächstes">›</button></div>
-<footer>© Frank Vogt · frankvogt.saarland</footer><script src="/script.js"></script></body></html>
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mond Universum – Frank Vogt</title>
+  <link rel="stylesheet" href="../../style.css">
+  <style>
+    .gallery-status{color:var(--muted);margin-top:18px}
+    .tile img{object-fit:cover;background:#111}
+    .video-tile{min-width:0;overflow:hidden;border-radius:8px;background:#090b0e;border:1px solid var(--accent)}
+    .video-tile video{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#090b0e}
+    .media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+  </style>
+</head>
+<body>
+  <nav class="nav"><a class="logo" href="../../">Frank Vogt</a>
+    <button class="menu" id="menuButton" aria-label="Menü öffnen">☰</button>
+    <div class="navlinks" id="navlinks">
+      <a href="../../">Startseite</a><a href="../../Fotografie/">Fotografie</a>
+      <a href="../../Fahrzeuge/">Fahrzeuge</a><a href="../../Holzwerken/">Holzwerken</a><a href="../../Musik/">Musik</a>
+    </div>
+  </nav>
+  <div class="breadcrumb" id="breadcrumb"></div>
+  <main class="gallery">
+    <div class="gallery-head"><div><div class="eyebrow">Frank Vogt · Fotogalerie</div><h2>Mond Universum</h2></div><div class="count" id="mediaCount">Medien werden geladen …</div></div>
+    <p class="lead">Fotos und Videos aus der Kategorie Mond Universum.</p>
+    <div class="grid media-grid" id="mediaGrid" aria-label="Foto- und Videogalerie"></div>
+    <p class="gallery-status" id="galleryStatus">Medien werden geladen …</p>
+  </main>
+  <footer>Frank Vogt · Fotogalerie</footer>
+  <div class="lightbox" id="lightbox" aria-label="Bildansicht">
+    <button class="close" id="closeButton" aria-label="Schließen">×</button><button class="prev" id="prevButton" aria-label="Vorheriges Foto">‹</button>
+    <img id="largeImage" alt="Foto in Großansicht"><button class="next" id="nextButton" aria-label="Nächstes Foto">›</button>
+  </div>
+  <script>
+  const ROOT="../../", FOLDER="Fotografie/Mond-Universum";
+  const grid=document.getElementById('mediaGrid'), count=document.getElementById('mediaCount'), status=document.getElementById('galleryStatus');
+  const lightbox=document.getElementById('lightbox'), largeImage=document.getElementById('largeImage');
+  let photos=[], current=0;
+  function fileUrl(name){return name.split('/').map(p=>encodeURIComponent(p)).join('/')}
+  function openPhoto(i){if(!photos.length)return;current=(i+photos.length)%photos.length;largeImage.src=fileUrl(photos[current]);lightbox.classList.add('open');document.body.style.overflow='hidden'}
+  function closePhoto(){lightbox.classList.remove('open');document.body.style.overflow='';largeImage.removeAttribute('src')}
+  document.getElementById('closeButton').addEventListener('click',closePhoto);
+  document.getElementById('prevButton').addEventListener('click',()=>openPhoto(current-1));
+  document.getElementById('nextButton').addEventListener('click',()=>openPhoto(current+1));
+  lightbox.addEventListener('click',e=>{if(e.target===lightbox)closePhoto()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closePhoto();if(lightbox.classList.contains('open')&&e.key==='ArrowLeft')openPhoto(current-1);if(lightbox.classList.contains('open')&&e.key==='ArrowRight')openPhoto(current+1)});
+  document.getElementById('menuButton').addEventListener('click',()=>document.getElementById('navlinks').classList.toggle('open'));
+  const crumb=document.getElementById('breadcrumb'), home=document.createElement('a');home.href=ROOT;home.textContent='Startseite';crumb.appendChild(home);
+  let accum='';FOLDER.split('/').filter(Boolean).forEach((part,i,parts)=>{crumb.append(' / ');accum+=(accum?'/':'')+part;if(i<parts.length-1){const a=document.createElement('a');a.href=ROOT+accum.split('/').map(encodeURIComponent).join('/')+'/';a.textContent=part;crumb.appendChild(a)}else crumb.append(document.createTextNode(part))});
+  async function loadMedia(){try{
+    const [ir,vr]=await Promise.all([fetch('bilder.json',{cache:'no-store'}),fetch('videos.json',{cache:'no-store'})]);
+    if(!ir.ok)throw new Error('bilder.json fehlt');const imageFiles=await ir.json(), videoFiles=vr.ok?await vr.json():[];
+    photos=imageFiles.filter(n=>typeof n==='string');const media=[...photos.map(name=>({name,type:'image'})),...videoFiles.filter(n=>typeof n==='string'&&n.toLowerCase().endsWith('.mp4')).map(name=>({name,type:'video'}))].sort((a,b)=>a.name.localeCompare(b.name,'de',{numeric:true,sensitivity:'base'}));
+    grid.replaceChildren();count.textContent=media.length+(media.length===1?' Medium':' Medien');
+    if(!media.length){status.textContent='In diesem Ordner wurden noch keine unterstützten Fotos oder MP4-Videos gefunden.';return}status.textContent='';
+    media.forEach(item=>{if(item.type==='image'){const b=document.createElement('button');b.className='tile';b.type='button';b.setAttribute('aria-label','Foto groß öffnen');const img=document.createElement('img');img.src=fileUrl(item.name);img.alt='';img.loading='lazy';img.addEventListener('error',()=>b.remove());b.appendChild(img);b.addEventListener('click',()=>{const i=photos.indexOf(item.name);if(i>=0)openPhoto(i)});grid.appendChild(b)}else{const wrap=document.createElement('div');wrap.className='video-tile';const v=document.createElement('video');v.src=fileUrl(item.name);v.controls=true;v.preload='metadata';v.playsInline=true;v.setAttribute('aria-label','Video abspielen');wrap.appendChild(v);grid.appendChild(wrap)}})
+  }catch(e){count.textContent='Medienliste fehlt';status.textContent='Die automatische Medienliste konnte nicht geladen werden. Bitte im GitHub-Reiter Actions prüfen, ob der Workflow erfolgreich war.';console.error(e)}}
+  loadMedia();
+  </script>
+</body></html>
