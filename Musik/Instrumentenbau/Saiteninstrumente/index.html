@@ -37,7 +37,12 @@
   const grid=document.getElementById('mediaGrid'), count=document.getElementById('mediaCount'), status=document.getElementById('galleryStatus');
   const lightbox=document.getElementById('lightbox'), largeImage=document.getElementById('largeImage');
   let photos=[], current=0;
-  function fileUrl(name){return name.split('/').map(p=>encodeURIComponent(p)).join('/')}
+  function fileUrl(name) {
+  return name
+    .split("/")
+    .map(part => encodeURIComponent(part))
+    .join("/");
+}
   function openPhoto(i){if(!photos.length)return;current=(i+photos.length)%photos.length;largeImage.src=fileUrl(photos[current]);lightbox.classList.add('open');document.body.style.overflow='hidden'}
   function closePhoto(){lightbox.classList.remove('open');document.body.style.overflow='';largeImage.removeAttribute('src')}
   document.getElementById('closeButton').addEventListener('click',closePhoto);
