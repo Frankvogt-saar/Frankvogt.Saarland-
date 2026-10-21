@@ -1,12 +1,11 @@
-
 <!doctype html>
 <html lang="de">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Instrumentengalerie – Frank Vogt</title>
+  <title>3.1.1 Saiteninstrumente – Frank Vogt</title>
   <link rel="stylesheet" href="../../../style.css">
-  <style>
+  <script type="text/javascript" src="https://ff.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=_J4j7Ah5ioZ7EpE2jwpjvFv5D7NUcf0sSupdt77NQ6qahDmkjmlDvOMcbtTgImbnmDzxYT-KrWA1UiTwa2OT0RUzpmh2PTC0oHZ4t09WzB5N1rQ1jDJ2Ph45sk7qNAY8PHUwQcgTUVj0S7xcitrh_XDRBw0d1vqgaleijoDbYAkFwiBOzrbcdM6AP1j5bS5jaFlpkfzHX2IIImrc8zNFbzZDMc9n4viq9ivXb6JAAHaWzCdf2ZVdHVqaQ5X5ce5yVu9o6EiD6idECCa02fFLFQ" charset="UTF-8"></script><style>
     .media-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
@@ -50,7 +49,7 @@
   <nav class="nav">
     <a class="logo" href="../../../">Frank Vogt</a>
     <button class="menu" id="menuButton" type="button"
-      aria-label="Menü öffnen">☰</button>
+      aria-label="Menü öffnen" aria-expanded="false" aria-controls="navlinks">☰</button>
     <div class="navlinks" id="navlinks">
       <a href="../../../">Startseite</a>
       <a href="../../../Fotografie/">Fotografie</a>
@@ -64,69 +63,66 @@
     <a href="../../../">Startseite</a> /
     <a href="../../">Musik</a> /
     <a href="../">Instrumentenbau</a> /
-    <span id="categoryName">Instrumente</span>
+    Saiteninstrumente
   </div>
 
   <main class="gallery">
     <div class="gallery-head">
       <div>
         <div class="eyebrow">Frank Vogt · Fotogalerie</div>
-        <h2 id="pageTitle">Instrumentengalerie</h2>
+        <h2>3.1.1 Saiteninstrumente</h2>
       </div>
       <div class="count" id="mediaCount">Medien werden geladen …</div>
     </div>
 
-    <p class="lead" id="intro">
-      Fotos und Videos aus meinen Instrumentenbauprojekten.
-    </p>
-
-    <div class="grid media-grid" id="mediaGrid"></div>
-    <p class="gallery-status" id="galleryStatus" role="status">
-      Medien werden geladen …
-    </p>
+    <p class="lead">Fotos und Videos aus der Kategorie Saiteninstrumente.</p>
+    <div class="grid media-grid" id="mediaGrid" aria-label="Foto- und Videogalerie"></div>
+    <p class="gallery-status" id="galleryStatus" role="status">Medien werden geladen …</p>
   </main>
 
   <footer>Frank Vogt · Fotogalerie</footer>
 
   <div class="lightbox" id="lightbox" aria-label="Bildansicht">
-    <button class="close" id="closeButton" aria-label="Schließen">×</button>
-    <button class="prev" id="prevButton" aria-label="Vorheriges Foto">‹</button>
+    <button class="close" id="closeButton" type="button" aria-label="Schließen">×</button>
+    <button class="prev" id="prevButton" type="button" aria-label="Vorheriges Foto">‹</button>
     <img id="largeImage" alt="Foto in Großansicht">
-    <button class="next" id="nextButton" aria-label="Nächstes Foto">›</button>
+    <button class="next" id="nextButton" type="button" aria-label="Nächstes Foto">›</button>
   </div>
 
   <script>
-    // DIESE DREI EINSTELLUNGEN JE UNTERSEITE ANPASSEN:
-    const FOLDER = "Musik/Instrumentenbau/Saiteninstrumente";
-    const TITLE = "3.1.1 Saiteninstrumente";
-    const DESCRIPTION = "Fotos und Videos von Saiteninstrumenten.";
+    "use strict";
 
     const ROOT = "../../../";
+    const FOLDER = "Musik/Instrumentenbau/Saiteninstrumente";
+
     const grid = document.getElementById("mediaGrid");
     const count = document.getElementById("mediaCount");
     const status = document.getElementById("galleryStatus");
     const lightbox = document.getElementById("lightbox");
     const largeImage = document.getElementById("largeImage");
-
-    document.getElementById("pageTitle").textContent = TITLE;
-    document.getElementById("categoryName").textContent = TITLE;
-    document.getElementById("intro").textContent = DESCRIPTION;
+    const menuButton = document.getElementById("menuButton");
+    const navlinks = document.getElementById("navlinks");
 
     let photos = [];
     let current = 0;
 
     function folderUrl(folder) {
-      return ROOT + folder.split("/")
-        .map(encodeURIComponent).join("/") + "/";
+      return ROOT + folder.split("/").map(encodeURIComponent).join("/") + "/";
     }
 
     function fileUrl(name) {
-      return folderUrl(FOLDER) + name.split("/")
-        .map(encodeURIComponent).join("/");
+      return folderUrl(FOLDER) +
+        name.split("/").map(encodeURIComponent).join("/");
     }
 
+    menuButton.addEventListener("click", () => {
+      const isOpen = navlinks.classList.toggle("open");
+      menuButton.setAttribute("aria-expanded", String(isOpen));
+      menuButton.setAttribute("aria-label", isOpen ? "Menü schließen" : "Menü öffnen");
+    });
+
     function openPhoto(index) {
-      if (!photos.length) return;
+      if (!photos.length || index < 0) return;
       current = (index + photos.length) % photos.length;
       largeImage.src = fileUrl(photos[current]);
       lightbox.classList.add("open");
@@ -139,12 +135,9 @@
       largeImage.removeAttribute("src");
     }
 
-    document.getElementById("closeButton")
-      .addEventListener("click", closePhoto);
-    document.getElementById("prevButton")
-      .addEventListener("click", () => openPhoto(current - 1));
-    document.getElementById("nextButton")
-      .addEventListener("click", () => openPhoto(current + 1));
+    document.getElementById("closeButton").addEventListener("click", closePhoto);
+    document.getElementById("prevButton").addEventListener("click", () => openPhoto(current - 1));
+    document.getElementById("nextButton").addEventListener("click", () => openPhoto(current + 1));
 
     lightbox.addEventListener("click", event => {
       if (event.target === lightbox) closePhoto();
@@ -157,17 +150,13 @@
       if (event.key === "ArrowRight") openPhoto(current + 1);
     });
 
-    document.getElementById("menuButton")
-      .addEventListener("click", () => {
-        document.getElementById("navlinks").classList.toggle("open");
-      });
-
     async function loadMedia() {
       try {
         const base = folderUrl(FOLDER);
-        const imageResponse = await fetch(base + "bilder.json", {
-          cache: "no-store"
-        });
+        const [imageResponse, videoResponse] = await Promise.all([
+          fetch(base + "bilder.json", { cache: "no-store" }),
+          fetch(base + "videos.json", { cache: "no-store" })
+        ]);
 
         if (!imageResponse.ok) {
           throw new Error("bilder.json fehlt oder ist nicht erreichbar.");
@@ -175,12 +164,8 @@
 
         const imageData = await imageResponse.json();
         if (!Array.isArray(imageData)) {
-          throw new Error("bilder.json ist ungültig.");
+          throw new Error("bilder.json enthält keine gültige Liste.");
         }
-
-        const videoResponse = await fetch(base + "videos.json", {
-          cache: "no-store"
-        });
 
         let videoData = [];
         if (videoResponse.ok) {
@@ -206,12 +191,10 @@
         }));
 
         grid.replaceChildren();
-        count.textContent = media.length +
-          (media.length === 1 ? " Medium" : " Medien");
 
         if (!media.length) {
-          status.textContent =
-            "Keine unterstützten Fotos oder MP4-Videos gefunden.";
+          count.textContent = "0 Medien";
+          status.textContent = "Keine unterstützten Fotos oder MP4-Videos gefunden.";
           return;
         }
 
@@ -228,12 +211,15 @@
             img.src = fileUrl(item.name);
             img.alt = "";
             img.loading = "lazy";
-
-            img.addEventListener("error", () => button.remove());
+            img.addEventListener("error", () => {
+              button.remove();
+              updateCount();
+            });
 
             button.appendChild(img);
             button.addEventListener("click", () => {
-              openPhoto(photos.indexOf(item.name));
+              const index = photos.indexOf(item.name);
+              if (index >= 0) openPhoto(index);
             });
             grid.appendChild(button);
           } else {
@@ -245,18 +231,25 @@
             video.controls = true;
             video.preload = "metadata";
             video.playsInline = true;
+            video.setAttribute("aria-label", "Video abspielen");
 
             wrapper.appendChild(video);
             grid.appendChild(wrapper);
           }
         });
+
+        updateCount();
       } catch (error) {
-        console.error(error);
+        console.error("Galerie konnte nicht geladen werden:", error);
         count.textContent = "Medienliste fehlt";
         status.textContent =
-          "Die Medienliste konnte nicht geladen werden. " +
-          "Bitte den GitHub-Workflow und bilder.json prüfen.";
+          "Die Medienliste konnte nicht geladen werden. Bitte prüfen, ob bilder.json vorhanden ist und der GitHub-Workflow erfolgreich war.";
       }
+    }
+
+    function updateCount() {
+      const number = grid.children.length;
+      count.textContent = number + (number === 1 ? " Medium" : " Medien");
     }
 
     loadMedia();
