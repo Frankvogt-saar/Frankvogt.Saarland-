@@ -1,119 +1,176 @@
+
 <!doctype html>
 <html lang="de">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>Musik – Frank Vogt</title>
   <link rel="stylesheet" href="../style.css">
+
   <style>
-    .gallery-status { color: var(--muted); margin-top: 18px; }
-    .tile img { object-fit: cover; background: #111; }
-    .category-list { display:flex; flex-wrap:wrap; gap:12px; margin:18px 0 24px; }
-    .category-link { display:inline-block; padding:12px 16px; border:1px solid var(--accent); border-radius:8px; color:var(--text); text-decoration:none; }
-    .category-link:hover { background:var(--panel); }
+    .music-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 18px;
+      margin-top: 28px;
+    }
+
+    .music-tile {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 170px;
+      padding: 24px;
+      color: var(--text);
+      text-decoration: none;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      transition: border-color .2s, transform .2s;
+    }
+
+    .music-tile:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+    }
+
+    .music-icon {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+
+    .music-tile h3 {
+      margin: 0 0 10px;
+      font-size: 1.2rem;
+    }
+
+    .music-tile p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .music-tile .arrow {
+      align-self: flex-end;
+      margin-top: 18px;
+      color: var(--accent);
+      font-size: 24px;
+    }
   </style>
 </head>
+
 <body>
   <nav class="nav">
     <a class="logo" href="../">Frank Vogt</a>
-    <button class="menu" id="menuButton" aria-label="Menü öffnen">☰</button>
+
+    <button
+      class="menu"
+      id="menuButton"
+      type="button"
+      aria-label="Menü öffnen"
+      aria-expanded="false"
+      aria-controls="navlinks"
+    >☰</button>
+
     <div class="navlinks" id="navlinks">
       <a href="../">Startseite</a>
+      <a href="../Fotografie/">Fotografie</a>
+      <a href="../Fahrzeuge/">Fahrzeuge</a>
+      <a href="../Holzwerken/">Holzwerken</a>
       <a href="./">Musik</a>
-      <a href="./">Musik</a><a href="Instrumentenbau/">Instrumentenbau</a><a href="Sonstiges/">Sonstiges</a>
     </div>
   </nav>
-  <div class="breadcrumb"><a href="../">Startseite</a> / Musik</div>
+
+  <div class="breadcrumb">
+    <a href="../">Startseite</a> / Musik
+  </div>
+
   <main class="gallery">
     <div class="gallery-head">
       <div>
         <div class="eyebrow">Frank Vogt · Fotogalerie</div>
         <h2>Musik</h2>
       </div>
-      <div class="count" id="photoCount">Bilder werden geladen …</div>
     </div>
-    <div class="category-list" aria-label="Unterordner"><a class="category-link" href="Instrumentenbau/">Instrumentenbau</a><a class="category-link" href="Sonstiges/">Sonstiges</a></div>
-    <div class="grid" id="photoGrid" aria-label="Fotogalerie"></div>
-    <p class="gallery-status" id="galleryStatus">Fotos werden geladen …</p>
+
+    <p class="lead">
+      Instrumentenbau, Saiteninstrumente, Schlaginstrumente,
+      weitere Projekte und Noten.
+    </p>
+
+    <div class="music-grid">
+
+      <a class="music-tile" href="Instrumentenbau/">
+        <div>
+          <div class="music-icon" aria-hidden="true">🛠️</div>
+          <h3>3.1 Instrumentenbau</h3>
+          <p>Selbst gebaute Instrumente und Werkstattprojekte.</p>
+        </div>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+
+      <a class="music-tile"
+         href="Instrumentenbau/Saiteninstrumente/">
+        <div>
+          <div class="music-icon" aria-hidden="true">🎸</div>
+          <h3>3.1.1 Saiteninstrumente</h3>
+          <p>Fotos und Videos von Saiteninstrumenten.</p>
+        </div>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+
+      <a class="music-tile"
+         href="Instrumentenbau/Schlaginstrumente/">
+        <div>
+          <div class="music-icon" aria-hidden="true">🥁</div>
+          <h3>3.1.2 Schlaginstrumente</h3>
+          <p>Schlaginstrumente und entsprechende Bauprojekte.</p>
+        </div>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+
+      <a class="music-tile"
+         href="Instrumentenbau/Sonstiges/">
+        <div>
+          <div class="music-icon" aria-hidden="true">🎵</div>
+          <h3>3.1.3 Sonstiges</h3>
+          <p>Weitere Musikinstrumente und Projekte.</p>
+        </div>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+
+      <a class="music-tile" href="Noten/">
+        <div>
+          <div class="music-icon" aria-hidden="true">🎼</div>
+          <h3>3.2 Noten</h3>
+          <p>Notenmaterial und musikalische Sammlungen.</p>
+        </div>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+
+    </div>
   </main>
+
   <footer>Frank Vogt · Fotogalerie</footer>
-  <div class="lightbox" id="lightbox" aria-label="Bildansicht">
-    <button class="close" id="closeButton" aria-label="Schließen">×</button>
-    <button class="prev" id="prevButton" aria-label="Vorheriges Foto">‹</button>
-    <img id="largeImage" alt="Foto in Großansicht">
-    <button class="next" id="nextButton" aria-label="Nächstes Foto">›</button>
-  </div>
+
   <script>
-    const grid = document.getElementById("photoGrid");
-    const count = document.getElementById("photoCount");
-    const status = document.getElementById("galleryStatus");
-    const lightbox = document.getElementById("lightbox");
-    const largeImage = document.getElementById("largeImage");
-    let photos = [];
-    let current = 0;
-    function fileUrl(name) {
-      return name.split("/").map(part => encodeURIComponent(part)).join("/");
-    }
-    function openPhoto(index) {
-      if (!photos.length) return;
-      current = (index + photos.length) % photos.length;
-      if (!photos[current]) return;
-      largeImage.src = fileUrl(photos[current]);
-      lightbox.classList.add("open");
-      document.body.style.overflow = "hidden";
-    }
-    function closePhoto() {
-      lightbox.classList.remove("open");
-      document.body.style.overflow = "";
-      largeImage.removeAttribute("src");
-    }
-    document.getElementById("closeButton").addEventListener("click", closePhoto);
-    document.getElementById("prevButton").addEventListener("click", () => openPhoto(current - 1));
-    document.getElementById("nextButton").addEventListener("click", () => openPhoto(current + 1));
-    lightbox.addEventListener("click", event => { if (event.target === lightbox) closePhoto(); });
-    document.addEventListener("keydown", event => {
-      if (event.key === "Escape") closePhoto();
-      if (event.key === "ArrowLeft" && lightbox.classList.contains("open")) openPhoto(current - 1);
-      if (event.key === "ArrowRight" && lightbox.classList.contains("open")) openPhoto(current + 1);
+    const menuButton = document.getElementById("menuButton");
+    const navlinks = document.getElementById("navlinks");
+
+    menuButton.addEventListener("click", () => {
+      const isOpen = navlinks.classList.toggle("open");
+
+      menuButton.setAttribute(
+        "aria-expanded",
+        String(isOpen)
+      );
+
+      menuButton.setAttribute(
+        "aria-label",
+        isOpen ? "Menü schließen" : "Menü öffnen"
+      );
     });
-    document.getElementById("menuButton").addEventListener("click", () => {
-      document.getElementById("navlinks").classList.toggle("open");
-    });
-    fetch("bilder.json", { cache: "no-store" })
-      .then(response => { if (!response.ok) throw new Error("Bilderliste fehlt"); return response.json(); })
-      .then(files => {
-        photos = files.filter(name => typeof name === "string");
-        count.textContent = photos.length + (photos.length === 1 ? " Foto" : " Fotos");
-        grid.replaceChildren();
-        if (!photos.length) {
-          status.textContent = "In diesem Ordner wurden noch keine unterstützten Bilddateien gefunden.";
-          return;
-        }
-        status.textContent = "";
-        photos.forEach((name, index) => {
-          const button = document.createElement("button");
-          button.className = "tile";
-          button.type = "button";
-          button.setAttribute("aria-label", "Foto " + (index + 1));
-          const img = document.createElement("img");
-          img.src = fileUrl(name);
-          img.alt = "";
-          img.loading = "lazy";
-          img.addEventListener("error", () => {
-            button.remove();
-            photos[index] = null;
-            const remaining = photos.filter(Boolean).length;
-            count.textContent = remaining + (remaining === 1 ? " Foto" : " Fotos");
-          });
-          button.appendChild(img);
-          button.addEventListener("click", () => openPhoto(index));
-          grid.appendChild(button);
-        });
-      })
-      .catch(() => {
-        count.textContent = "Bilderliste fehlt";
-        status.textContent = "Die automatische Bilderliste wurde noch nicht erstellt. Bitte die GitHub-Aktion im Ordner .github/workflows hochladen und danach einmal mit GitHub Desktop pushen.";
-      });
   </script>
 </body>
 </html>
