@@ -33,34 +33,156 @@
     <img id="largeImage" alt="Foto in Großansicht"><button class="next" id="nextButton" aria-label="Nächstes Foto">›</button>
   </div>
   <script>
-  const ROOT="../../../", FOLDER="Musik/Instrumentenbau/Saiteninstrumente";
-  const grid=document.getElementById('mediaGrid'), count=document.getElementById('mediaCount'), status=document.getElementById('galleryStatus');
-  const lightbox=document.getElementById('lightbox'), largeImage=document.getElementById('largeImage');
-  let photos=[], current=0;
-  function fileUrl(name) {
-  return name
-    .split("/")
-    .map(part => encodeURIComponent(part))
-    .join("/");
+ 
+const ROOT = "../../../";
+const FOLDER = "Musik/Instrumentenbau/Saiteninstrumente";
+
+const grid = document.getElementById("mediaGrid");
+const count = document.getElementById("mediaCount");
+const status = document.getElementById("galleryStatus");
+const lightbox = document.getElementById("lightbox");
+const largeImage = document.getElementById("largeImage");
+
+let photos = [];
+let current = 0;
+
+function fileUrl(name) {
+  return ROOT +
+    FOLDER.split("/").map(encodeURIComponent).join("/") +
+    "/" +
+    name.split("/").map(encodeURIComponent).join("/");
 }
-  function openPhoto(i){if(!photos.length)return;current=(i+photos.length)%photos.length;largeImage.src=fileUrl(photos[current]);lightbox.classList.add('open');document.body.style.overflow='hidden'}
-  function closePhoto(){lightbox.classList.remove('open');document.body.style.overflow='';largeImage.removeAttribute('src')}
-  document.getElementById('closeButton').addEventListener('click',closePhoto);
-  document.getElementById('prevButton').addEventListener('click',()=>openPhoto(current-1));
-  document.getElementById('nextButton').addEventListener('click',()=>openPhoto(current+1));
-  lightbox.addEventListener('click',e=>{if(e.target===lightbox)closePhoto()});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')closePhoto();if(lightbox.classList.contains('open')&&e.key==='ArrowLeft')openPhoto(current-1);if(lightbox.classList.contains('open')&&e.key==='ArrowRight')openPhoto(current+1)});
-  document.getElementById('menuButton').addEventListener('click',()=>document.getElementById('navlinks').classList.toggle('open'));
-  const crumb=document.getElementById('breadcrumb'), home=document.createElement('a');home.href=ROOT;home.textContent='Startseite';crumb.appendChild(home);
-  let accum='';FOLDER.split('/').filter(Boolean).forEach((part,i,parts)=>{crumb.append(' / ');accum+=(accum?'/':'')+part;if(i<parts.length-1){const a=document.createElement('a');a.href=ROOT+accum.split('/').map(encodeURIComponent).join('/')+'/';a.textContent=part;crumb.appendChild(a)}else crumb.append(document.createTextNode(part))});
-  async function loadMedia(){try{
-    const [ir,vr]=await Promise.all([fetch('bilder.json',{cache:'no-store'}),fetch('videos.json',{cache:'no-store'})]);
-    if(!ir.ok)throw new Error('bilder.json fehlt');const imageFiles=await ir.json(), videoFiles=vr.ok?await vr.json():[];
-    photos=imageFiles.filter(n=>typeof n==='string');const media=[...photos.map(name=>({name,type:'image'})),...videoFiles.filter(n=>typeof n==='string'&&n.toLowerCase().endsWith('.mp4')).map(name=>({name,type:'video'}))].sort((a,b)=>a.name.localeCompare(b.name,'de',{numeric:true,sensitivity:'base'}));
-    grid.replaceChildren();count.textContent=media.length+(media.length===1?' Medium':' Medien');
-    if(!media.length){status.textContent='In diesem Ordner wurden noch keine unterstützten Fotos oder MP4-Videos gefunden.';return}status.textContent='';
-    media.forEach(item=>{if(item.type==='image'){const b=document.createElement('button');b.className='tile';b.type='button';b.setAttribute('aria-label','Foto groß öffnen');const img=document.createElement('img');img.src=fileUrl(item.name);img.alt='';img.loading='lazy';img.addEventListener('error',()=>b.remove());b.appendChild(img);b.addEventListener('click',()=>{const i=photos.indexOf(item.name);if(i>=0)openPhoto(i)});grid.appendChild(b)}else{const wrap=document.createElement('div');wrap.className='video-tile';const v=document.createElement('video');v.src=fileUrl(item.name);v.controls=true;v.preload='metadata';v.playsInline=true;v.setAttribute('aria-label','Video abspielen');wrap.appendChild(v);grid.appendChild(wrap)}})
-  }catch(e){count.textContent='Medienliste fehlt';status.textContent='Die automatische Medienliste konnte nicht geladen werden. Bitte im GitHub-Reiter Actions prüfen, ob der Workflow erfolgreich war.';console.error(e)}}
-  loadMedia();
-  </script>
-</body></html>
+
+function openPhoto(i) {
+  if (!photos.length) return;
+  current = (i + photos.length) % photos.length;
+  largeImage.src = fileUrl(photos[current]);
+  lightbox.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closePhoto() {
+  lightbox.classList.remove("open");
+  document.body.style.overflow = "";
+  largeImage.removeAttribute("src");
+}
+
+document.getElementById("closeButton").addEventListener("click", closePhoto);
+document.getElementById("prevButton").addEventListener("click", () => openPhoto(current - 1));
+document.getElementById("nextButton").addEventListener("click", () => openPhoto(current + 1));
+
+lightbox.addEventListener("click", e => {
+  if (e.target === lightbox) closePhoto();
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closePhoto();
+  if (lightbox.classList.contains("open") && e.key === "ArrowLeft") openPhoto(current - 1);
+  if (lightbox.classList.contains("open") && e.key === "ArrowRight") openPhoto(current + 1);
+});
+
+document.getElementById("menuButton").addEventListener("click", () => {
+  document.getElementById("navlinks").classList.toggle("open");
+});
+
+const crumb = document.getElementById("breadcrumb");
+const home = document.createElement("a");
+home.href = ROOT;
+home.textContent = "Startseite";
+crumb.appendChild(home);
+
+let accum = "";
+FOLDER.split("/").forEach((part, i, parts) => {
+  crumb.append(" / ");
+  accum += (accum ? "/" : "") + part;
+
+  if (i < parts.length - 1) {
+    const a = document.createElement("a");
+    a.href = ROOT + accum.split("/").map(encodeURIComponent).join("/") + "/";
+    a.textContent = part;
+    crumb.appendChild(a);
+  } else {
+    crumb.append(document.createTextNode(part));
+  }
+});
+
+async function loadMedia() {
+  try {
+    const [ir, vr] = await Promise.all([
+      fetch(ROOT + FOLDER + "/bilder.json", { cache: "no-store" }),
+      fetch(ROOT + FOLDER + "/videos.json", { cache: "no-store" })
+    ]);
+
+    if (!ir.ok) throw new Error("bilder.json fehlt");
+
+    const imageFiles = await ir.json();
+    const videoFiles = vr.ok ? await vr.json() : [];
+
+    photos = imageFiles.filter(n => typeof n === "string");
+
+    const media = [
+      ...photos.map(name => ({ name, type: "image" })),
+      ...videoFiles
+        .filter(n => typeof n === "string" && n.toLowerCase().endsWith(".mp4"))
+        .map(name => ({ name, type: "video" }))
+    ].sort((a, b) => a.name.localeCompare(b.name, "de", {
+      numeric: true,
+      sensitivity: "base"
+    }));
+
+    grid.replaceChildren();
+    count.textContent = media.length + (media.length === 1 ? " Medium" : " Medien");
+
+    if (!media.length) {
+      status.textContent = "Keine unterstützten Fotos oder MP4-Videos gefunden.";
+      return;
+    }
+
+    status.textContent = "";
+
+    media.forEach(item => {
+      if (item.type === "image") {
+        const b = document.createElement("button");
+        b.className = "tile";
+        b.type = "button";
+        b.setAttribute("aria-label", "Foto groß öffnen");
+
+        const img = document.createElement("img");
+        img.src = fileUrl(item.name);
+        img.alt = "";
+        img.loading = "lazy";
+
+        img.addEventListener("error", () => {
+          console.error("Bild konnte nicht geladen werden:", img.src);
+          b.remove();
+        });
+
+        b.appendChild(img);
+        b.addEventListener("click", () => {
+          const i = photos.indexOf(item.name);
+          if (i >= 0) openPhoto(i);
+        });
+
+        grid.appendChild(b);
+      } else {
+        const wrap = document.createElement("div");
+        wrap.className = "video-tile";
+
+        const v = document.createElement("video");
+        v.src = fileUrl(item.name);
+        v.controls = true;
+        v.preload = "metadata";
+        v.playsInline = true;
+
+        wrap.appendChild(v);
+        grid.appendChild(wrap);
+      }
+    });
+  } catch (e) {
+    count.textContent = "Medienliste fehlt";
+    status.textContent = "Die automatische Medienliste konnte nicht geladen werden. Bitte den GitHub-Workflow prüfen.";
+    console.error(e);
+  }
+}
+
+loadMedia();
