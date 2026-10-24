@@ -1,88 +1,61 @@
 <!doctype html>
 <html lang="de">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Traktoren – Frank Vogt</title>
-<link rel="stylesheet" href="../../style.css">
-<script type="text/javascript" src="https://ff.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=8Ml4KW3d1Nhxfi0Qr6UlpDs_dF0PMQKrtLhr7HHpKQdz16SRjFtFV80oThdlfQDjpQykYI9FE-bM1JOvSnDnfj0Psd15e3Z-1aCUSSFmTlclrxrygEEhS6nrj1kWWtVL51WF51-WkK9yS8P_vNlGCyM1kVvMszMH6P2rmTJiPar5P-v4PPathR1HW6LKx3u7zm0pUkLrlRzveNosSe7UaYkIHxlEnZ4ZIgTrbOxYM0MMef32h2zzSRU9qn3NNCQZjHu9LFCrSN_jWezx9qOKJj0PyKP7kx4z9F3Axg3_OMsxnVVhLzck3octSr_7T_HO59kOkq1gL9JgSSinFs0y1Q" charset="UTF-8"></script><style>
-.gallery-status{color:var(--muted);margin-top:18px}
-.tile img{object-fit:cover;background:#111}
-.video-tile{min-width:0;overflow:hidden;border-radius:8px;background:#090b0e;border:1px solid var(--accent)}
-.video-tile video{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#090b0e}
-.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
-.tractor-subfolders{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:24px 0 30px}
-.tractor-folder{display:block;padding:22px;color:var(--text);text-decoration:none;background:var(--panel);border:1px solid var(--line);border-radius:10px;transition:border-color .2s,transform .2s}
-.tractor-folder:hover{border-color:var(--accent);transform:translateY(-2px)}
-.folder-icon{display:block;font-size:32px;margin-bottom:12px}
-.tractor-folder h3{margin:0 0 8px}
-.tractor-folder p{margin:0;color:var(--muted);line-height:1.5}
-</style>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Traktoren – Frank Vogt</title>
+  <link rel="stylesheet" href="../../style.css">
+  <style>
+    .gallery-status{color:var(--muted);margin-top:18px}
+    .tile img{object-fit:cover;background:#111}
+    .video-tile{min-width:0;overflow:hidden;border-radius:8px;background:#090b0e;border:1px solid var(--accent)}
+    .video-tile video{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#090b0e}
+    .media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+  </style>
 </head>
 <body>
-<nav class="nav">
-<a class="logo" href="../../">Frank Vogt</a>
-<button class="menu" id="menuButton" type="button" aria-label="Menü öffnen" aria-expanded="false" aria-controls="navlinks">☰</button>
-<div class="navlinks" id="navlinks">
-<a href="../../">Startseite</a><a href="../../Fotografie/">Fotografie</a>
-<a href="../../Fahrzeuge/">Fahrzeuge</a><a href="../../Holzwerken/">Holzwerken</a><a href="../../Musik/">Musik</a>
-</div>
-</nav>
-<div class="breadcrumb" id="breadcrumb"></div>
-<main class="gallery">
-<div class="gallery-head"><div><div class="eyebrow">Frank Vogt · Fotogalerie</div><h2>Traktoren</h2></div><div class="count" id="mediaCount">Medien werden geladen …</div></div>
-<p class="lead">Aktuelle und ehemalige Traktoren sowie Fotos und Videos aus der Kategorie Traktoren.</p>
-<section aria-label="Traktoren-Unterordner">
-<div class="tractor-subfolders">
-<a class="tractor-folder" href="Aktuell/"><span class="folder-icon" aria-hidden="true">🚜</span><h3>Aktuell</h3><p>Aktuelle Traktoren und zugehörige Fotos und Videos.</p></a>
-<a class="tractor-folder" href="Ehemalig/"><span class="folder-icon" aria-hidden="true">🛠️</span><h3>Ehemalig</h3><p>Ehemalige Traktoren und Erinnerungen.</p></a>
-</div>
-</section>
-<h3>Weitere Fotos und Videos</h3>
-<div class="grid media-grid" id="mediaGrid" aria-label="Foto- und Videogalerie"></div>
-<p class="gallery-status" id="galleryStatus" role="status">Medien werden geladen …</p>
-</main>
-<footer>Frank Vogt · Fotogalerie</footer>
-<div class="lightbox" id="lightbox" aria-label="Bildansicht">
-<button class="close" id="closeButton" type="button" aria-label="Schließen">×</button>
-<button class="prev" id="prevButton" type="button" aria-label="Vorheriges Foto">‹</button>
-<img id="largeImage" alt="Foto in Großansicht">
-<button class="next" id="nextButton" type="button" aria-label="Nächstes Foto">›</button>
-</div>
-<script>
-"use strict";
-const ROOT="../../", FOLDER="Fahrzeuge/Traktoren";
-const grid=document.getElementById("mediaGrid"),count=document.getElementById("mediaCount"),status=document.getElementById("galleryStatus");
-const lightbox=document.getElementById("lightbox"),largeImage=document.getElementById("largeImage");
-const menuButton=document.getElementById("menuButton"),navlinks=document.getElementById("navlinks");
-let photos=[],current=0;
-function fileUrl(name){return name.split("/").map(p=>encodeURIComponent(p)).join("/")}
-menuButton.addEventListener("click",()=>{const open=navlinks.classList.toggle("open");menuButton.setAttribute("aria-expanded",String(open));menuButton.setAttribute("aria-label",open?"Menü schließen":"Menü öffnen")});
-function openPhoto(i){if(!photos.length)return;current=(i+photos.length)%photos.length;largeImage.src=fileUrl(photos[current]);lightbox.classList.add("open");document.body.style.overflow="hidden"}
-function closePhoto(){lightbox.classList.remove("open");document.body.style.overflow="";largeImage.removeAttribute("src")}
-document.getElementById("closeButton").addEventListener("click",closePhoto);
-document.getElementById("prevButton").addEventListener("click",()=>openPhoto(current-1));
-document.getElementById("nextButton").addEventListener("click",()=>openPhoto(current+1));
-lightbox.addEventListener("click",e=>{if(e.target===lightbox)closePhoto()});
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closePhoto();if(lightbox.classList.contains("open")&&e.key==="ArrowLeft")openPhoto(current-1);if(lightbox.classList.contains("open")&&e.key==="ArrowRight")openPhoto(current+1)});
-const crumb=document.getElementById("breadcrumb"),home=document.createElement("a");home.href=ROOT;home.textContent="Startseite";crumb.appendChild(home);
-let accum="";FOLDER.split("/").forEach((part,i,parts)=>{crumb.append(" / ");accum+=(accum?"/":"")+part;if(i<parts.length-1){const a=document.createElement("a");a.href=ROOT+accum.split("/").map(encodeURIComponent).join("/")+"/";a.textContent=part;crumb.appendChild(a)}else crumb.appendChild(document.createTextNode(part))});
-async function loadMedia(){try{
-const [ir,vr]=await Promise.all([fetch("bilder.json",{cache:"no-store"}),fetch("videos.json",{cache:"no-store"})]);
-if(!ir.ok)throw new Error("bilder.json fehlt");
-const imageFiles=await ir.json(),videoFiles=vr.ok?await vr.json():[];
-if(!Array.isArray(imageFiles))throw new Error("bilder.json ist ungültig");
-const safeVideos=Array.isArray(videoFiles)?videoFiles:[];
-photos=imageFiles.filter(n=>typeof n==="string"&&/\.(jpe?g|png|gif|webp|avif)$/i.test(n));
-const media=[...photos.map(name=>({name,type:"image"})),...safeVideos.filter(n=>typeof n==="string"&&n.toLowerCase().endsWith(".mp4")).map(name=>({name,type:"video"}))].sort((a,b)=>a.name.localeCompare(b.name,"de",{numeric:true,sensitivity:"base"}));
-grid.replaceChildren();
-if(!media.length){count.textContent="0 Medien";status.textContent="Keine unterstützten Fotos oder MP4-Videos im Hauptordner. Die Unterordner Aktuell und Ehemalig können oben geöffnet werden.";return}
-status.textContent="";
-media.forEach(item=>{if(item.type==="image"){const b=document.createElement("button");b.className="tile";b.type="button";b.setAttribute("aria-label","Foto groß öffnen");const img=document.createElement("img");img.src=fileUrl(item.name);img.alt="";img.loading="lazy";img.addEventListener("error",()=>{b.remove();updateCount()});b.appendChild(img);b.addEventListener("click",()=>{const i=photos.indexOf(item.name);if(i>=0)openPhoto(i)});grid.appendChild(b)}else{const wrap=document.createElement("div");wrap.className="video-tile";const v=document.createElement("video");v.src=fileUrl(item.name);v.controls=true;v.preload="metadata";v.playsInline=true;v.setAttribute("aria-label","Video abspielen");wrap.appendChild(v);grid.appendChild(wrap)}});
-updateCount();
-}catch(e){console.error(e);count.textContent="Medienliste fehlt";status.textContent="Die automatische Medienliste konnte nicht geladen werden. Bitte im GitHub-Reiter Actions prüfen, ob der Workflow erfolgreich war."}}
-function updateCount(){const n=grid.children.length;count.textContent=n+(n===1?" Medium":" Medien")}
-loadMedia();
-</script>
-</body>
-</html>
+  <nav class="nav"><a class="logo" href="../../">Frank Vogt</a>
+    <button class="menu" id="menuButton" aria-label="Menü öffnen">☰</button>
+    <div class="navlinks" id="navlinks">
+      <a href="../../">Startseite</a><a href="../../Fotografie/">Fotografie</a>
+      <a href="../../Fahrzeuge/">Fahrzeuge</a><a href="../../Holzwerken/">Holzwerken</a><a href="../../Musik/">Musik</a>
+    </div>
+  </nav>
+  <div class="breadcrumb" id="breadcrumb"></div>
+  <main class="gallery">
+    <div class="gallery-head"><div><div class="eyebrow">Frank Vogt · Fotogalerie</div><h2>Traktoren</h2></div><div class="count" id="mediaCount">Medien werden geladen …</div></div>
+    <p class="lead">Fotos und Videos aus der Kategorie Traktoren.</p>
+    <div class="grid media-grid" id="mediaGrid" aria-label="Foto- und Videogalerie"></div>
+    <p class="gallery-status" id="galleryStatus">Medien werden geladen …</p>
+  </main>
+  <footer>Frank Vogt · Fotogalerie</footer>
+  <div class="lightbox" id="lightbox" aria-label="Bildansicht">
+    <button class="close" id="closeButton" aria-label="Schließen">×</button><button class="prev" id="prevButton" aria-label="Vorheriges Foto">‹</button>
+    <img id="largeImage" alt="Foto in Großansicht"><button class="next" id="nextButton" aria-label="Nächstes Foto">›</button>
+  </div>
+  <script>
+  const ROOT="../../", FOLDER="Fahrzeuge/Traktoren";
+  const grid=document.getElementById('mediaGrid'), count=document.getElementById('mediaCount'), status=document.getElementById('galleryStatus');
+  const lightbox=document.getElementById('lightbox'), largeImage=document.getElementById('largeImage');
+  let photos=[], current=0;
+  function fileUrl(name){return name.split('/').map(p=>encodeURIComponent(p)).join('/')}
+  function openPhoto(i){if(!photos.length)return;current=(i+photos.length)%photos.length;largeImage.src=fileUrl(photos[current]);lightbox.classList.add('open');document.body.style.overflow='hidden'}
+  function closePhoto(){lightbox.classList.remove('open');document.body.style.overflow='';largeImage.removeAttribute('src')}
+  document.getElementById('closeButton').addEventListener('click',closePhoto);
+  document.getElementById('prevButton').addEventListener('click',()=>openPhoto(current-1));
+  document.getElementById('nextButton').addEventListener('click',()=>openPhoto(current+1));
+  lightbox.addEventListener('click',e=>{if(e.target===lightbox)closePhoto()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closePhoto();if(lightbox.classList.contains('open')&&e.key==='ArrowLeft')openPhoto(current-1);if(lightbox.classList.contains('open')&&e.key==='ArrowRight')openPhoto(current+1)});
+  document.getElementById('menuButton').addEventListener('click',()=>document.getElementById('navlinks').classList.toggle('open'));
+  const crumb=document.getElementById('breadcrumb'), home=document.createElement('a');home.href=ROOT;home.textContent='Startseite';crumb.appendChild(home);
+  let accum='';FOLDER.split('/').filter(Boolean).forEach((part,i,parts)=>{crumb.append(' / ');accum+=(accum?'/':'')+part;if(i<parts.length-1){const a=document.createElement('a');a.href=ROOT+accum.split('/').map(encodeURIComponent).join('/')+'/';a.textContent=part;crumb.appendChild(a)}else crumb.append(document.createTextNode(part))});
+  async function loadMedia(){try{
+    const [ir,vr]=await Promise.all([fetch('bilder.json',{cache:'no-store'}),fetch('videos.json',{cache:'no-store'})]);
+    if(!ir.ok)throw new Error('bilder.json fehlt');const imageFiles=await ir.json(), videoFiles=vr.ok?await vr.json():[];
+    photos=imageFiles.filter(n=>typeof n==='string');const media=[...photos.map(name=>({name,type:'image'})),...videoFiles.filter(n=>typeof n==='string'&&n.toLowerCase().endsWith('.mp4')).map(name=>({name,type:'video'}))].sort((a,b)=>a.name.localeCompare(b.name,'de',{numeric:true,sensitivity:'base'}));
+    grid.replaceChildren();count.textContent=media.length+(media.length===1?' Medium':' Medien');
+    if(!media.length){status.textContent='In diesem Ordner wurden noch keine unterstützten Fotos oder MP4-Videos gefunden.';return}status.textContent='';
+    media.forEach(item=>{if(item.type==='image'){const b=document.createElement('button');b.className='tile';b.type='button';b.setAttribute('aria-label','Foto groß öffnen');const img=document.createElement('img');img.src=fileUrl(item.name);img.alt='';img.loading='lazy';img.addEventListener('error',()=>b.remove());b.appendChild(img);b.addEventListener('click',()=>{const i=photos.indexOf(item.name);if(i>=0)openPhoto(i)});grid.appendChild(b)}else{const wrap=document.createElement('div');wrap.className='video-tile';const v=document.createElement('video');v.src=fileUrl(item.name);v.controls=true;v.preload='metadata';v.playsInline=true;v.setAttribute('aria-label','Video abspielen');wrap.appendChild(v);grid.appendChild(wrap)}})
+  }catch(e){count.textContent='Medienliste fehlt';status.textContent='Die automatische Medienliste konnte nicht geladen werden. Bitte im GitHub-Reiter Actions prüfen, ob der Workflow erfolgreich war.';console.error(e)}}
+  loadMedia();
+  </script>
+</body></html>
